@@ -1,0 +1,39 @@
+<div *ngIf="featureToggle" class="featuretoggledetails">
+
+    <h4>Details</h4>
+    <div *ngIf="addNew==true">Adding NEW </div>
+    <div *ngIf="addNew==false"><span>id: </span>{{featureToggle.id}}</div>
+    <div>
+   
+      <label for="featureToggle-displayname">Display Name: </label>
+      <input id="featureToggle-displayname" required [(ngModel)]="featureToggle.displayname" 
+      placeholder="displayname" #name="ngModel">
+
+      <br>
+      <label for="featureToggle-technicalname">Technical Name: </label>
+      <input id="featureToggle-technicalname" [(ngModel)]="featureToggle.technicalname" placeholder="technicalname">
+    
+      <br>
+      <label for="featureToggle-description">Description: </label>
+      <input id="featureToggle-description" [(ngModel)]="featureToggle.description" placeholder="description">
+    
+      <br>
+      <label for="featureToggle-expireson">Expires On: </label>    
+      <input id="featureToggle-expireson" [(ngModel)]="entryExpireOnDate" (ngModelChange)="entryExpireOnDateChange()">
+
+      <br>
+      <label for="featureToggle-inverted">Inverted: </label>
+      <input type="checkbox" id="featureToggle-inverted" [(ngModel)]="featureToggle.inverted" placeholder="inverted">
+
+      <br>
+      <label for="featureToggle-customerids">Customers: </label>
+      <input id="featureToggle-customerids" [(ngModel)]="customerIds" (ngModelChange)="entryCustomeridsChange()" placeholder="Customer IDs">
+
+      <br>
+      <button (click)="delete()">delete</button>
+
+      <button (click)="save()">save</button>
+    </div>
+  
+</div>
+

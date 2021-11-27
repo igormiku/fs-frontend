@@ -1,0 +1,12 @@
+.featuretoggledetails {
+    width: 30em;
+  }
+
+
+  .featuretoggledetails input{
+    width: 30em;
+  }
+
+  .featuretoggledetails input[type=checkbox]{
+    width: 1em;
+  }

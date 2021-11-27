@@ -1,0 +1,27 @@
+
+
+<table class="featuretoggle">
+<tr>
+<td>
+<h4>Feature Toggles</h4>
+<ul>
+
+  <li *ngFor="let ft of featureToggles"
+    [class.selected]="ft === selectedFeatureToggle"
+    (click)="onSelect(ft)">
+
+    <span class="badge">{{ft.id}}</span> {{ft.displayname}}
+ <!---   <a routerLink="/features/{{ft.id}}">
+         <span class="badge">{{ft.id}}</span> {{ft.displayname}}
+        </a>-->
+  </li>
+
+</ul>
+<button (click)="add()">add</button>
+</td> 
+<td>
+    <router-outlet></router-outlet>
+   
+</td>
+</tr>
+</table>
