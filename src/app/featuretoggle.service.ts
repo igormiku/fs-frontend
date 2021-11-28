@@ -12,6 +12,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 export class FeatureToggleService {
 
+  //TODO: bring it to config.json
   private WebServiceURL = 'http://localhost:10000/api/v1/features';
   private WebServiceURLAdd = 'http://localhost:10000/api/v1/features/add';
 
@@ -20,6 +21,8 @@ export class FeatureToggleService {
   AddFeatureToggleObs: Subject<FeatureToggle> = new Subject<FeatureToggle>();
   UpdateFeatureToggleObs: Subject<FeatureToggle> = new Subject<FeatureToggle>();
   
+  constructor(private http: HttpClient) { }
+
   notifyCurrentFeatureToggleChange(ft: FeatureToggle) {
    this.CurrentFeatureToggleObs.next(ft);
   }
@@ -41,7 +44,6 @@ export class FeatureToggleService {
     headers: new HttpHeaders({ 'Content-Type': 'application/json'})   
   };
 
-  constructor(private http: HttpClient) { }
 
   //HTTP get for entire list of FeatureToggle
   getFeatureToggles(): Observable<FeatureToggle[]> {
@@ -86,10 +88,8 @@ export class FeatureToggleService {
   
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
-
       // TODO: send the error to remote logging infrastructure
       console.error(error); // log to console instead
-
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
