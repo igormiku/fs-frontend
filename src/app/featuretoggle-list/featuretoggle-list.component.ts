@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, takeWhile } from 'rxjs';
 
 import { FeatureToggle } from '../featuretoggle';
 import { FeatureToggleService } from '../featuretoggle.service';
@@ -14,8 +14,8 @@ import { FeatureToggleService } from '../featuretoggle.service';
 
 export class FeaturetoggleListComponent implements OnInit {
   selectedFeatureToggle?: FeatureToggle;
-  featureToggles : FeatureToggle[] = []
-
+  featureToggles : FeatureToggle[] = [];
+  RouteParamMapSubscription : Subscription = new Subscription();
 
   CurrentFeatureToggleSubscription: Subscription = this.featureToggleService.CurrentFeatureToggleObs.subscribe(
     ft => {
@@ -52,7 +52,7 @@ export class FeaturetoggleListComponent implements OnInit {
 
   routeParamSubcribe(): void{
     //subscribe to catch param changes from Observable paramMap
-    this.route.paramMap.subscribe(
+    this.RouteParamMapSubscription = this.route.paramMap.subscribe(
       params => 
       { 
         //below is to process params either features/id, features/add, or feature/something
@@ -64,7 +64,6 @@ export class FeaturetoggleListComponent implements OnInit {
             var ft = {id:-1} as FeatureToggle;
             this.featureToggleService.notifyCurrentFeatureToggleChange(ft);
           }
-         
         }
         else
         {
@@ -88,6 +87,9 @@ export class FeaturetoggleListComponent implements OnInit {
     this.DeleteFeatureToggleSubscription.unsubscribe();
     this.AddFeatureToggleSubscription.unsubscribe();
     this.UpdateFeatureToggleSubscription.unsubscribe();
+   
+    // unsubscribe from Route.paramMap
+    this.RouteParamMapSubscription.unsubscribe();
   }
 
   onSelect(featureToggle: FeatureToggle): void {

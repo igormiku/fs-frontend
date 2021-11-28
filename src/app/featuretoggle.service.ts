@@ -24,7 +24,8 @@ export class FeatureToggleService {
   constructor(private http: HttpClient) { }
 
   notifyCurrentFeatureToggleChange(ft: FeatureToggle) {
-   this.CurrentFeatureToggleObs.next(ft);
+   if (ft != null)
+     this.CurrentFeatureToggleObs.next(ft);
   }
 
   notifyDeleteFeatureToggle(ft: FeatureToggle) {
