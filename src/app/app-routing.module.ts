@@ -5,11 +5,10 @@ import { FeaturetoggleDetailComponent } from './featuretoggle-detail/featuretogg
 import { FeaturetoggleListComponent } from './featuretoggle-list/featuretoggle-list.component';
 
 const routes: Routes = [
-  { path: 'features', component: FeaturetoggleDetailComponent },
-
-  { path: 'features/:id', component: FeaturetoggleDetailComponent },
-  { path: 'features/add', component: FeaturetoggleDetailComponent},
-  { path: '', redirectTo: '/features', pathMatch: 'full'},
+  { path: 'features', component: FeaturetoggleListComponent },
+  { path: 'features/:id', component: FeaturetoggleListComponent },
+  { path: 'features/add', component: FeaturetoggleListComponent},
+  { path: '', redirectTo: '/features/', pathMatch: 'full'},
 
 ];
 

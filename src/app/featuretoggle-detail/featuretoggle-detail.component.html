@@ -2,7 +2,7 @@
 
     <h4>Details</h4>
     <div *ngIf="addNew==true">Adding NEW </div>
-    <div *ngIf="addNew==false"><span>id: </span>{{featureToggle.id}}</div>
+    <!--- <div *ngIf="addNew==false"><span>id: </span>{{featureToggle.id}}</div> -->
     <div>
    
       <label for="featureToggle-displayname">Display Name: </label>
@@ -30,7 +30,7 @@
       <input id="featureToggle-customerids" [(ngModel)]="customerIds" (ngModelChange)="entryCustomeridsChange()" placeholder="Customer IDs">
 
       <br>
-      <button (click)="delete()">delete</button>
+      <button *ngIf="addNew==false" (click)="delete()">delete</button>
 
       <button (click)="save()">save</button>
     </div>

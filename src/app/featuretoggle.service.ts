@@ -15,11 +15,27 @@ export class FeatureToggleService {
   private WebServiceURL = 'http://localhost:10000/api/v1/features';
   private WebServiceURLAdd = 'http://localhost:10000/api/v1/features/add';
 
-  subjecFeatureToggleServiceNotifier: Subject<null> = new Subject<null>();
+  CurrentFeatureToggleObs: Subject<FeatureToggle> = new Subject<FeatureToggle>();
+  DeleteFeatureToggleObs: Subject<FeatureToggle> = new Subject<FeatureToggle>();
+  AddFeatureToggleObs: Subject<FeatureToggle> = new Subject<FeatureToggle>();
+  UpdateFeatureToggleObs: Subject<FeatureToggle> = new Subject<FeatureToggle>();
   
-  notifyAboutFeatureTogglesChange() {
-    this.subjecFeatureToggleServiceNotifier.next(null);
+  notifyCurrentFeatureToggleChange(ft: FeatureToggle) {
+   this.CurrentFeatureToggleObs.next(ft);
   }
+
+  notifyDeleteFeatureToggle(ft: FeatureToggle) {
+    this.DeleteFeatureToggleObs.next(ft);
+  }
+
+  notifyAddFeatureToggle(ft: FeatureToggle) {
+    this.AddFeatureToggleObs.next(ft);
+  }
+
+  notifyUpdateFeatureToggle(ft: FeatureToggle) {
+    this.UpdateFeatureToggleObs.next(ft);
+  }
+
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json'})   
@@ -27,43 +43,36 @@ export class FeatureToggleService {
 
   constructor(private http: HttpClient) { }
 
-
+  //HTTP get for entire list of FeatureToggle
   getFeatureToggles(): Observable<FeatureToggle[]> {
-    //rewrite to HTTP.Get
-    //const featureToggles = of(FEATURETOGGLES);
-    //return featureToggles;
     return this.http.get<FeatureToggle[]>(this.WebServiceURL)
       .pipe(
-        //tap(_ => console.log('fetched FeatureToggles')),
         catchError(this.handleError<FeatureToggle[]>('getFeatureToggles', []))
       )
-
   }
 
+  //HTTP get for one of FeatureToggle
   getFeatureToggle(id: string): Observable<FeatureToggle> {
     return this.http.get<FeatureToggle>(this.WebServiceURL+"/"+id, this.httpOptions).pipe(
       catchError(this.handleError<FeatureToggle>('addFeatureToggle'))
     )
   }
   
-
+ //HTTP POST to add one of FeatureToggle
   addFeatureToggle(ft: FeatureToggle): Observable<FeatureToggle> {
- 
     return this.http.post<FeatureToggle>(this.WebServiceURLAdd, ft, this.httpOptions).pipe(
       catchError(this.handleError<FeatureToggle>('addFeatureToggle'))
     )
   }
-  
+  //HTTP PUT to modify one of FeatureToggle
   updateFeatureToggle(ft: FeatureToggle): Observable<FeatureToggle> {
-
     return this.http.put<FeatureToggle>(this.WebServiceURL, ft, this.httpOptions).pipe(
       catchError(this.handleError<FeatureToggle>('updateFeatureToggle'))
     )
-    
   }
 
+   //HTTP DELETE to remove one of FeatureToggle
   removeFeatureToggle(ft: FeatureToggle): Observable<FeatureToggle> {
-
     //for DELETE method body should be inside options, or possible to rewrite backend for URL param instead
     var deleteHttpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json'}),
@@ -73,11 +82,8 @@ export class FeatureToggleService {
     return this.http.delete<FeatureToggle>(this.WebServiceURL, deleteHttpOptions).pipe(
         catchError(this.handleError<FeatureToggle>('updateFeatureToggle'))
       ) 
-
     }
   
-
-    
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 

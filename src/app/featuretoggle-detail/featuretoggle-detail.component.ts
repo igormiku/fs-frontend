@@ -15,17 +15,37 @@ import { FeatureToggleService } from '../featuretoggle.service';
 export class FeaturetoggleDetailComponent implements OnInit {
   featureToggle: FeatureToggle | undefined;
   addNew: boolean = false;
- 
- 
   entryExpireOnDate = '';
   customerIds = '';
 
+  //this subscribes to Observable to listen for changes in CurrentFeatureToggle
+  CurrentFeatureToggleSubscription: Subscription = this.featureToggleService.CurrentFeatureToggleObs.subscribe(
+    ft => {
+      //-1 is indicating new
+      //TODO: to replace it to data object data = {addnew:true, ft: FeatureToggle} in next for Observer
+      if (ft.id == -1) {
+        this.addNew = true;
+        this.featureToggle = this.addFeatureToggle();
+      }
+      else 
+      {      
+        this.addNew = false;
+        this.featureToggle = ft
+
+        //HTML helper logic
+        let unixTime = parseInt(ft.expireson);     
+        this.entryExpireOnDate = (new Date(unixTime*1000)).toString(); 
+        this.customerIds = this.featureToggle.customerids.join(",")
+      }
+    });
+
+  //convert input from date to unixtimestamp string for FeatureToggle
   entryExpireOnDateChange() {
     if (this.featureToggle) {
       this.featureToggle.expireson = String((new Date(Date.parse(this.entryExpireOnDate) || NaN)).getTime() / 1000);
     }
   }
-
+  //convert input from customerids string to string array for FeatureToggle
   entryCustomeridsChange() {
     if (this.featureToggle) {
       this.featureToggle.customerids = this.customerIds.split(",");      
@@ -33,40 +53,13 @@ export class FeaturetoggleDetailComponent implements OnInit {
   }
   
   constructor(
-    private featureToggleService: FeatureToggleService,
-    private route: ActivatedRoute,
-    private router: Router) { }
+    private featureToggleService: FeatureToggleService) { }
 
+  ngOnInit(): void { 
+  }
 
-  ngOnInit(): void {
-    //subscribe to catch param changes from Observable paramMap
-    this.route.paramMap.subscribe(
-      params => 
-      { 
-        //below is to process params either features/id, features/add, or feature/crap
-        this.addNew = false
-        if (isNaN(Number(params.get('id')!)))
-        {
-          if (params.get('id') == 'add')
-          {
-            //change state of compenent to add new entries
-            this.addNew = true
-            //feature/new case
-            this.featureToggle =  this.addFeatureToggle()
-          }
-          else
-          {
-            //return nothing is feature/crap
-            this.featureToggle = undefined
-          }
-        }
-        else
-        {
-            //feature/properid case
-          this.featureToggle =  this.getFeatureToggle(params.get('id')!)
-        }
-      }
-    )
+  ngOnDestroy(): void {
+    this.CurrentFeatureToggleSubscription.unsubscribe();
   }
 
   //separate logic for add and edit, as using one component for both actions
@@ -78,29 +71,14 @@ export class FeaturetoggleDetailComponent implements OnInit {
     return {id: 0, customerids: {}, expireson: expirresondefault, } as FeatureToggle
   }
 
-  getFeatureToggle(id: string): FeatureToggle {
-    this.featureToggleService.getFeatureToggle(id.toString())
-      .subscribe(ft => 
-        {
-          this.featureToggle = ft;
-
-          let unixTime = parseInt(ft.expireson);     
-          this.entryExpireOnDate = (new Date(unixTime*1000)).toString(); 
-          this.customerIds = this.featureToggle.customerids.join(",")
-          
-        }
-      );
-    return this.featureToggle!;
-  }
-
   save(): void{
     if (this.addNew)
     {
+      this.entryCustomeridsChange();
       this.featureToggleService.addFeatureToggle(this.featureToggle!) 
        .subscribe(ft => {
         this.featureToggle = ft; 
-        this.featureToggleService.notifyAboutFeatureTogglesChange();
-        this.addNew = false;
+        this.featureToggleService.notifyAddFeatureToggle(ft);
       } );
     }
     else
@@ -108,17 +86,17 @@ export class FeaturetoggleDetailComponent implements OnInit {
       this.featureToggleService.updateFeatureToggle(this.featureToggle!)
         .subscribe(ft => {
             this.featureToggle = ft; 
-            this.featureToggleService.notifyAboutFeatureTogglesChange();
+            this.featureToggleService.notifyUpdateFeatureToggle(ft);
         } );
-
     }
   }
 
   delete(): void{
+    this.featureToggleService.notifyDeleteFeatureToggle(this.featureToggle!);
+
     this.featureToggleService.removeFeatureToggle(this.featureToggle!) 
       .subscribe(ft => {
         this.featureToggle = ft; 
-        this.featureToggleService.notifyAboutFeatureTogglesChange();
       } );
   }
 }
